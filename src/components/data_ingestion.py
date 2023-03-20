@@ -7,6 +7,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
+from src.components.data_transformation import DataTransformation
+#from src.components.data_transformation import DataTransformationConfig
+#from src.components.model_training import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
+
 @dataclass
 class DataIngestionConfig:
     train_data_path: str = os.path.join('artifacts',"train.csv")
@@ -16,20 +21,20 @@ class DataIngestionConfig:
 
 class DataIngestion:
     def __init__(self):
-        print('1')
+        #print('1')
         self.ingestion_config = DataIngestionConfig()
 
     def initializeDataIngestion(self):
         logging.info("Data Ingestion Component")
         try:
             
-            print('2')
+            #print('2')
             df = pd.read_csv('notebook/data/StudentPerformance.csv')
             logging.info('Dataset read from data folder')
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)
             df.to_csv(self.ingestion_config.raw_data_path)
-            print('3')
+            #print('3')
             logging.info('Train test split started')
             train_set, test_set = train_test_split(df,test_size=0.2,random_state=42)
             
@@ -37,7 +42,7 @@ class DataIngestion:
 
             test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
             logging.info('Train test split completed. Data ingestion done')
-            print('4')
+            #print('4')
             return(
                 self.ingestion_config.train_data_path,
                 self.ingestion_config.test_data_path,
@@ -48,6 +53,15 @@ class DataIngestion:
 
 if __name__=="__main__":
     obj = DataIngestion()
-    obj.initializeDataIngestion()    
+    train_data, test_data = obj.initializeDataIngestion()    
+
+    dataTransformation = DataTransformation()
+    train_arr,test_arr,_ = dataTransformation.initiate_data_transformation(train_data,test_data)
+
+    model_trainer = ModelTrainer()
+    print(model_trainer.initiate_model_trainer(train_arr,test_arr))
+
+
+
         
             
