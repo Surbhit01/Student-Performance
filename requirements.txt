@@ -2,5 +2,7 @@ pandas
 numpy
 seaborn
 scikit-learn
-dill
+hyperparameterTuning
+xgboost
+catboost
 #-e .
