@@ -9,6 +9,7 @@ from src.exception import CustomException
 from src.logger import logging
 
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 def save_object(file_path, obj):
     try:
@@ -26,14 +27,21 @@ def save_object(file_path, obj):
         raise CustomException(e, sys)
 
 
-def evaluate_models(X_train,y_train,X_test,y_test,models):
+def evaluate_models(X_train,y_train,X_test,y_test,models,param):
     try:
         report = {}
 
         for i in range(len(list(models))):
 
-            #Selecting the ith model
+            #Selecting the ith model and parameters
             model = list(models.values())[i]
+            pm = param[list(models.keys())[i]]
+
+            gs = GridSearchCV(model,pm,cv=3)
+            gs.fit(X_train,y_train)
+
+            #Setting best parameters
+            model.set_params(**gs.best_params_)
 
             #Training model
             model.fit(X_train,y_train)
